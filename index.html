@@ -57,7 +57,7 @@
 
   /* ---------- media slot: real image, or a placeholder until one is added ---------- */
   .media { position: relative; overflow: hidden; background: #111; }
-  .media img { width: 100%; height: 100%; object-fit: cover; }
+  .media img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
   .ph {
     position: absolute; inset: 0;
     display: flex; align-items: flex-end; justify-content: space-between;
@@ -265,13 +265,34 @@
   .next .nt { width: 181px; }
   .next .nt h3 { font-size: var(--fs-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .next .th { width: 181px; height: 120px; }
-  .next .th img { transition: transform .6s var(--ease); }
-  .next a:hover .th img { transform: scale(1.04); }
+  .next .th { outline: 1px solid transparent; outline-offset: 4px; transition: outline-color .3s var(--ease); }
+  .next .th img { filter: brightness(.8) grayscale(.3); transition: transform .6s var(--ease), filter .4s var(--ease); }
+  .next a:hover .th { outline-color: rgba(0,0,0,.6); }
+  .next a:hover .th img { transform: scale(1.06); filter: none; }
+  .next .nt h3 { text-decoration: underline 1px transparent; text-underline-offset: 4px; transition: text-decoration-color .3s var(--ease); }
+  .next a:hover .nt h3 { text-decoration-color: currentColor; }
   @media (min-width: 768px) {
     .next { margin-top: 320px; }
     .next a { flex-direction: row; gap: 24px; }
     .next .nt { width: auto; display: flex; align-items: baseline; gap: 20px; }
     .next .th { width: 217px; height: 144px; }
+  }
+
+  /* underline on hover for text buttons and links */
+  .nav a:not(.name), .phead a, .phead button, .watch, .play i, .tab .tt, .about a, .lb-t {
+    text-decoration: underline 1px transparent; text-underline-offset: 4px; transition: text-decoration-color .25s var(--ease), opacity .3s var(--ease);
+  }
+  .nav a:not(.name):hover, .phead a:hover, .phead button:hover, .watch:hover, .play:hover i, .tab:hover .tt, .about a:hover { text-decoration-color: currentColor; }
+
+  /* film grain over the whole site */
+  body::after {
+    content: ""; position: fixed; inset: -50%; z-index: 90; pointer-events: none; opacity: .09;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+    animation: grain .8s steps(6) infinite;
+  }
+  @keyframes grain {
+    0% { transform: translate(0, 0); } 20% { transform: translate(-5%, 3%); } 40% { transform: translate(4%, -6%); }
+    60% { transform: translate(-3%, -2%); } 80% { transform: translate(6%, 4%); } 100% { transform: translate(0, 0); }
   }
 
   .page { animation: fade .6s var(--ease); }
