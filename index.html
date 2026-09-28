@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dinag Sengupta</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="description" content="Dinag Sengupta. Filmmaker, Mumbai. Food cinematography, horror, trailers and concert photography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* Display: PP Editorial (Pangram Pangram, licensed). Drop the files into fonts/; Newsreader stands in until then. */
+  @font-face { font-family: "PP Editorial Condensed"; font-weight: 400; font-style: normal; font-display: swap;
+    src: url("fonts/PPEditorialCondensed-Regular.woff2") format("woff2"), url("fonts/PPEditorialCondensed-Regular.woff") format("woff"), url("fonts/PPEditorialCondensed-Regular.otf") format("opentype"); }
+</style>
+<style>
+  :root {
+    --black: #000;
+    --white: #fff;
+    --gray: #d9d9d9;
+    /* Type: major third (x1.25) from a 14px body */
+    --fs--1: .7rem;       /* 11.2px  small labels */
+    --fs-0: .875rem;      /* 14px    body */
+    --fs-1: 1.09375rem;   /* 17.5px */
+    --fs-2: 1.3672rem;    /* 21.9px */
+    --fs-3: 1.709rem;     /* 27.3px */
+    --fs-4: 2.1362rem;    /* 34.2px */
+    --fs-5: 2.6703rem;    /* 42.7px */
+    --fs-6: 3.3379rem;    /* 53.4px */
+    --display: "PP Editorial Condensed", "Newsreader", Georgia, serif;
+    --body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --pad: 10px;
+    --gap: 5rem;
+    --ease: cubic-bezier(.4,0,.2,1);
+  }
+  @media (min-width: 768px) { :root { --pad: 20px; } }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--body);
+    font-size: var(--fs-0);
+    line-height: 1.45;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  img, video, iframe { display: block; max-width: 100%; }
+  .sm { font-size: var(--fs--1); line-height: 1.3; }
+  /* display face: headings, the name, big list items */
+  .nav .name, .phead h1, .work li a .t, .about .lead, .next .nt h3, .film figcaption > span:first-child { font-family: var(--display); font-weight: 400; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- media slot: real image, or a placeholder until one is added ---------- */
+  .media { position: relative; overflow: hidden; background: #111; }
+  .media img { width: 100%; height: 100%; object-fit: cover; }
+  .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 12px; color: rgba(255,255,255,.72);
+    background: var(--ph);
+  }
+  .ph::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .28; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .ph span { position: relative; z-index: 1; }
+
+  /* ---------- global nav: name (home) top-left, Work + About top-right ---------- */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    display: flex; align-items: baseline; gap: 20px;
+    padding: var(--pad); color: var(--white); mix-blend-mode: difference;
+  }
+  .nav .name { margin-right: auto; white-space: nowrap; font-size: var(--fs-2); line-height: 1; }
+  .nav a.active { opacity: .45; }
+  /* inner pages: solid bar so it never sits on top of the content */
+  .nav.bar { background: var(--white); color: var(--black); mix-blend-mode: normal; }
+
+  /* ---------- home: two auto-sliding strips under a 40% veil ---------- */
+  .home { position: fixed; inset: 0; height: 100svh; background: #000; }
+  .slides, .slide { position: absolute; inset: 0; }
+  .slide { opacity: 0; transition: opacity 1.2s var(--ease); }
+  .slide.on { opacity: 1; z-index: 1; }
+  .slide video, .slide img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* preview videos sit on their still and fade in only once frames are actually playing */
+  video.pv { opacity: 0; transition: opacity .6s var(--ease); }
+  video.pv.live { opacity: 1; }
+  /* even dark wash, a little deeper at the bottom so the tabs read */
+  .home .veil { position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    background: linear-gradient(to top, rgba(0,0,0,.6) 0%, rgba(0,0,0,.35) 30%, rgba(0,0,0,.35) 100%); }
+  .tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 25; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: 12px; padding: var(--pad); color: #fff; }
+  .tab { display: flex; flex-direction: column; gap: 8px; opacity: .55; transition: opacity .3s var(--ease); }
+  .tab.on, .tab:hover { opacity: 1; }
+  .tab .tt { font-size: var(--fs-0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar { height: 1px; background: rgba(255,255,255,.3); }
+  .bar i { display: block; height: 100%; width: 0; background: #fff; }
+  .tab.on .bar i { animation: fill 6s linear forwards; }
+  @keyframes fill { to { width: 100%; } }
+  @media (min-width: 768px) { .tabs { gap: 20px; } .tab .tt { font-size: var(--fs-1); } }
+  @media (max-width: 767px) { .tab .tt { font-size: var(--fs--1); } }
+
+  /* ---------- work index ---------- */
+  /* list on the left half, hover preview on the right half */
+  .work { min-height: 100svh; display: flex; align-items: center; justify-content: flex-start; padding: 140px var(--pad); }
+  .work ol { list-style: none; width: 100%; position: relative; z-index: 2; }
+  .work ol .muted { color: rgba(0,0,0,.45); }
+  .work li a {
+    display: grid; grid-template-columns: 2.5rem 1fr; align-items: baseline; column-gap: 1rem; row-gap: .4rem;
+    padding: 1.1rem 0; border-top: 1px solid rgba(0,0,0,.14); transition: opacity .3s var(--ease);
+  }
+  .work li a .cat { grid-column: 2; }
+  .work li:last-child a { border-bottom: 1px solid rgba(0,0,0,.14); }
+  .work li a .t { font-size: var(--fs-4); line-height: 1; }
+  @media (min-width: 1024px) { .work li a .t { font-size: var(--fs-6); } }
+  .work ol:hover li a { opacity: .25; }
+  .work ol li a:hover { opacity: 1; }
+  .work .preview {
+    position: fixed; top: 50%; left: 75%; width: min(38vw, 460px, calc((100svh - 160px) * 4 / 5)); aspect-ratio: 4 / 5;
+    transform: translate(-50%, -50%) scale(.96); opacity: 0; z-index: 1; pointer-events: none;
+    transition: opacity .35s var(--ease), transform .5s var(--ease);
+  }
+  @media (min-width: 768px) { .work ol { max-width: 50%; } }
+  .work .preview .media { width: 100%; height: 100%; }
+  .work .preview video, .work .preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .work .preview.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  @media (max-width: 767px) { .work .preview { display: none; } .work li a { grid-template-columns: 1.8rem 1fr; } }
+
+  /* ---------- about ---------- */
+  .about { padding: 160px var(--pad) 120px; max-width: 72rem; margin: 0 auto; display: grid; gap: 4rem; }
+  .about .lead { font-size: var(--fs-3); line-height: 1.15; max-width: 40rem; }
+  @media (min-width: 1024px) { .about .lead { font-size: var(--fs-5); } }
+  .about section { display: grid; gap: 1.2rem; }
+  .about h2 { font-weight: 400; }
+  .about .row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1rem 0; border-top: 1px solid rgba(0,0,0,.14); }
+  .about .row p + p { margin-top: .35rem; }
+  .about .row .muted, .muted { color: rgba(0,0,0,.55); }
+  .about .cols { display: grid; gap: 3rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .about ul { list-style: none; display: grid; gap: .35rem; }
+  @media (min-width: 900px) {
+    .about { grid-template-columns: 1fr 2fr; column-gap: 5rem; }
+    .about .lead, .about .full { grid-column: 1 / -1; }
+  }
+
+  /* ---------- project page (Type 7 layout) ---------- */
+  .hero { position: relative; margin-bottom: 200px; }
+  .hero .veil { position: absolute; inset: 0; background: #000; opacity: .4; z-index: 2; }
+  .hero .media { width: 100vw; height: 100svh; }
+  @media (min-width: 768px) { .hero { margin-bottom: 320px; } .hero .media { height: 100vh; } }
+
+  .phead {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 30;
+    display: flex; justify-content: space-between; padding: var(--pad);
+    color: var(--white); mix-blend-mode: difference;
+    opacity: 0; transition: opacity 1s var(--ease) .25s;
+  }
+  .phead.in { opacity: 1; }
+  .phead h1 { font-size: var(--fs-2); line-height: 1.1; margin-bottom: 4px; }
+  .phead .r { display: flex; align-items: flex-start; gap: 20px; }
+  .x { display: block; width: 18px; height: 18px; }
+  @media (min-width: 768px) {
+    .phead .l { display: flex; align-items: baseline; gap: 20px; }
+    .phead h1 { margin: 0; }
+  }
+
+  .flow { display: flex; flex-direction: column; gap: 200px; }
+  .row3 { display: grid; grid-template-columns: 1fr; gap: var(--gap); width: 75%; max-width: 72rem; margin: 0 auto; }
+  .row3 .media { aspect-ratio: 4 / 5; }
+  .row3.tall .media { aspect-ratio: 2 / 3; }
+  .bleed .media { width: 100vw; aspect-ratio: 16 / 9; }
+  .padded { padding: 0 var(--pad); }
+  .padded .media { aspect-ratio: 3 / 2; }
+  .split { display: grid; grid-template-columns: 1fr; gap: 200px; }
+  .split .media { aspect-ratio: 2 / 3; }
+  @media (min-width: 768px) {
+    .flow { gap: 320px; }
+    .row3 { grid-template-columns: repeat(3, 1fr); width: 100%; padding: 0 var(--pad); }
+    .split { grid-template-columns: 1fr 1fr; gap: 0; }
+    .split .media { aspect-ratio: auto; height: 100vh; }
+  }
+
+  /* trailer player */
+  .player { width: 100vw; aspect-ratio: 16 / 9; position: relative; background: #000; }
+  .player .media { position: absolute; inset: 0; }
+  .player iframe, .player video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .play {
+    position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center;
+    color: #fff; background: rgba(0,0,0,.25); transition: background .3s var(--ease);
+  }
+  .play:hover { background: rgba(0,0,0,.05); }
+  .play i { font-style: normal; display: flex; align-items: center; gap: 14px; }
+  .play i::before { content: ""; width: 0; height: 0; border-left: 14px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; }
+
+  /* hero reveal: a hairline draws across the middle, then two black bars part up and down */
+  .curtain { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
+  .curtain i { position: absolute; left: 0; right: 0; height: 50.5%; background: #000;
+    animation: part 1.3s cubic-bezier(.77,0,.18,1) .7s forwards; }
+  .curtain i:first-child { top: 0; --to: -100%; }
+  .curtain i:last-child { bottom: 0; --to: 100%; }
+  .curtain::after { content: ""; position: absolute; left: 50%; top: 50%; width: 100%; height: 1px; background: #fff;
+    transform: translateX(-50%) scaleX(0); animation: line 1.2s cubic-bezier(.65,0,.35,1) .1s forwards; }
+  @keyframes part { to { transform: translateY(var(--to)); } }
+  @keyframes line {
+    55% { transform: translateX(-50%) scaleX(1); opacity: 1; }
+    100% { transform: translateX(-50%) scaleX(1); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .curtain { display: none; } }
+
+  /* films */
+  .film { cursor: pointer; }
+  .film .media, .row3 .film .media { aspect-ratio: 9 / 16; }
+  .film video, .film-hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .snd {
+    position: absolute; right: 10px; bottom: 10px; z-index: 4; width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    color: #fff; background: rgba(0,0,0,.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    transition: background .2s var(--ease);
+  }
+  .snd:hover { background: rgba(0,0,0,.7); }
+  .snd svg { width: 18px; height: 18px; }
+  .film-hero .snd { right: var(--pad); bottom: var(--pad); }
+  .film figcaption > span:first-child { font-size: var(--fs-1); }
+  .film figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; }
+  .film:focus-visible { outline: 1px solid #000; outline-offset: 6px; }
+  .film.wide .media, .row3 .film.wide .media, .padded .film .media, .bleed .film .media { aspect-ratio: 16 / 9; width: 100%; }
+  .bleed .film figcaption { padding: 0 var(--pad); }
+  .photo img { width: 100%; height: auto; aspect-ratio: auto 3 / 4; }
+  .row3:has(.photo) { align-items: start; }
+  .pair { display: flex; flex-direction: column; align-items: center; gap: var(--gap); }
+  .pair .film { width: 75%; }
+  @media (min-width: 768px) {
+    .pair { flex-direction: row; justify-content: center; }
+    .pair .film { width: min(40vw, calc(88vh * 9 / 16)); }
+  }
+  .film-hero .media { position: relative; }
+  .watch { position: absolute; left: var(--pad); bottom: var(--pad); z-index: 3; color: #fff; display: flex; align-items: center; gap: 8px; }
+  .watch::before { content: ""; border-left: 8px solid #fff; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+
+  .lb { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; align-items: center; justify-content: center; padding: 48px var(--pad); }
+  .lb[hidden] { display: none; }
+  .lb video { max-width: 100%; max-height: 100%; }
+  .lb-x { position: absolute; top: var(--pad); right: var(--pad); }
+  .lb-t { position: absolute; left: var(--pad); bottom: var(--pad); color: #fff; }
+
+  /* info panel */
+  .info {
+    position: fixed; right: var(--pad); bottom: var(--pad); z-index: 50;
+    width: calc(100vw - 20px); padding: 20px 23px; background: var(--gray); color: #000;
+    transform: translateY(calc(100% + 20px)); opacity: 0; pointer-events: none;
+    transition: transform .5s var(--ease), opacity .4s var(--ease);
+  }
+  .info.open { transform: none; opacity: 1; pointer-events: auto; }
+  .info p + p { margin-top: 2px; }
+  .info .meta { margin-top: 14px; display: flex; justify-content: space-between; }
+  @media (min-width: 768px) { .info { width: 453px; } }
+
+  /* footer / next project */
+  .next { margin-top: 200px; padding: 0 var(--pad) var(--pad); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+  .next a { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .next .nt { width: 181px; }
+  .next .nt h3 { font-size: var(--fs-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .next .th { width: 181px; height: 120px; }
+  .next .th img { transition: transform .6s var(--ease); }
+  .next a:hover .th img { transform: scale(1.04); }
+  @media (min-width: 768px) {
+    .next { margin-top: 320px; }
+    .next a { flex-direction: row; gap: 24px; }
+    .next .nt { width: auto; display: flex; align-items: baseline; gap: 20px; }
+    .next .th { width: 217px; height: 144px; }
+  }
+
+  .page { animation: fade .6s var(--ease); }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   CONTENT. Edit this block to update the site.
+   Images: drop files into img/<slug>/ named hero.jpg, 01.jpg ... 10.jpg.
+   Any file that is missing shows a tinted placeholder instead.
+   Trailer: paste a YouTube or Vimeo link into `video`, or a local .mp4 path.
+   ============================================================ */
+const SITE = {
+  name: "Dinag Sengupta",
+  role: "Filmmaker",
+  city: "Mumbai",
+  email: "dinagsengupta@gmail.com",
+  year: new Date().getFullYear(),
+};
+
+// Media pages: `hero` is the full-screen opener, `rows` follow it.
+// Row kinds: "three" (3 across), "pair" (2 large, centred), "wide" (edge to edge), "padded" (full width, small margins).
+// A video item is { name, kind, id, wide? }: loop copy video/<id>.mp4, full-screen copy video/hd/<id>.mp4,
+// still img/<slug>/posters/<id>.jpg. A photo item is { photo: "<file>" } for img/<slug>/<file>.jpg.
+// `hidden: true` keeps a project off the site until it has content.
+const ALL_PROJECTS = [
+  {
+    slug: "food-cinematography",
+    title: "Restaurant Films",
+    category: "Food Cinematography",
+    year: "2024 – 2025",
+    info: ["Food and restaurant films. Shot, lit and edited.", "Cin Cin, HOSA, Hakkasan, Pincode, Supa San, TU, Toa 66, Yauatcha"],
+    ph: ["#2b1409", "#8a4417", "#e0ae66"],
+    media: {
+      hero: { name: "Toa 66", kind: "Ingredient Video", id: "toa-66", wide: true },
+      rows: [
+        ["three", [
+          { name: "Cin Cin", kind: "Food Video", id: "cin-cin" },
+          { name: "Yauatcha", kind: "Brand Video", id: "yauatcha" },
+          { name: "HOSA", kind: "Brand Video", id: "hosa" },
+        ]],
+        ["pair", [
+          { name: "Supa San", kind: "Chef Video", id: "supa-san" },
+          { name: "Hakkasan", kind: "Teaser", id: "hakkasan" },
+        ]],
+        ["three", [
+          { name: "Pincode", kind: "Teaser", id: "pincode-teaser" },
+          { name: "TU", kind: "Video 4", id: "tu" },
+          { name: "Pincode", kind: "POI Video", id: "pincode-poi" },
+        ]],
+      ],
+    },
+  },
+  {
+    slug: "horror",
+    title: "Short Films",
+    category: "Horror",
+    year: "",
+    info: ["Horror shorts and stills", "Swimmer, Crack Red, Zombie Addiction, Feed Bleed, Naini"],
+    ph: ["#030303", "#1d0404", "#5e0c0c"],
+    media: {
+      hero: { name: "Swimmer", kind: "Horror Short", id: "swimmer", wide: true },
+      rows: [
+        ["pair", [
+          { name: "Crack Red", kind: "Horror Short", id: "crack-red" },
+          { name: "Zombie Addiction", kind: "Horror Short", id: "zombie-addiction" },
+        ]],
+        ["wide", [{ name: "Feed Bleed", kind: "Horror Short", id: "feed-bleed", wide: true }]],
+        ["padded", [{ name: "Naini", kind: "Horror Short", id: "naini", wide: true }]],
+        ["three", [{ photo: "pitch" }, { photo: "hermod-3" }, { photo: "hermod-4" }]],
+      ],
+    },
+  },
+  {
+    slug: "trailer",
+    hidden: true,
+    title: "The Hills Have Gold",
+    category: "Trailer",
+    year: "2024 –",
+    info: ["Documentary in development, foothills of the Himalayas", "Two brothers set out on a dangerous harvest"],
+    video: "",
+    ph: ["#141b19", "#44533f", "#c4ae78"],
+  },
+  {
+    slug: "concert-photography",
+    title: "Live",
+    category: "Concert Photography",
+    year: "",
+    info: ["Concert photography"],
+    ph: ["#06030d", "#3a0c4c", "#cf3527"],
+    media: {
+      hero: { photo: "freshblood" },
+      rows: [
+        ["three", [{ photo: "drummer" }, { photo: "sepultura" }, { photo: "teemeer" }]],
+        ["three", [{ photo: "kill-the-king" }, { photo: "thrashers-1" }, { photo: "thrashers-6" }]],
+      ],
+    },
+  },
+];
+const PROJECTS = ALL_PROJECTS.filter(p => !p.hidden);
+
+const ABOUT = {
+  lead: "People intrigue me: their passions, connections and struggles. With a deep love for horror and thriller films, I write to unsettle or captivate, crafting stories that linger.",
+  body: "Alongside filmmaking I have built a strong foundation in food and product photography, translating textures and flavours into striking visuals. Having shot several short films and commercial projects, I have sharpened my understanding of both storytelling and aesthetics. I thrive in collaborative environments, always eager to contribute where it matters.",
+  experience: [
+    ["Documentary Film (ongoing)", "The Hills Have Gold", "2024 –"],
+    ["Food and Product Photography", "ADKO", "2024 – 2025"],
+    ["Camera Assistant to DoP Arun Verma", "Feature film Mangla, Rash Productions", "June 2024"],
+    ["Social Media Marketing", "Staunch Fit, Shamnad Abubacker", "Sept 2023"],
+    ["Second Camera and Co-editor", "Khyber Cement ad, Nitric Films", "Aug 2023"],
+    ["Concert Photography", "Uprising Edition 1, Indian Artists Collective", "June 2023"],
+    ["Non-fiction Intern", "Chalkboard Entertainment", "June – Aug 2023"],
+    ["Content Creation", "Latracal Solutions", ""],
+  ],
+  skills: ["Video Editing", "Camera Operation", "Lighting / Gaffer", "Writing for Screen", "Creative Direction"],
+  tools: ["Adobe Premiere Pro", "Adobe Photoshop", "Adobe Lightroom", "Figma"],
+  languages: ["English", "Hindi", "Bengali"],
+};
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+const $app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const CLOSE = `<svg class="x" viewBox="0 0 18 18" aria-hidden="true"><rect width="18" height="18" fill="#D9D9D9"/><path d="M14 5.9l-.05.04c-.66.1-1.23.5-2.12 1.38L10.14 9l1.69 1.69c.89.89 1.44 1.25 2.12 1.37l.05.05-1.9 1.89-.04-.05c-.13-.68-.49-1.23-1.38-2.12L9 10.14l-1.69 1.69c-.88.89-1.25 1.44-1.37 2.12l-.05.05L4 12.11l.05-.05c.69-.12 1.24-.48 2.12-1.37L7.86 9 6.17 7.31C5.28 6.43 4.71 6.04 4.05 5.94L4 5.89 5.89 4l.05.05c.1.66.49 1.23 1.37 2.12L9 7.86l1.69-1.69c.88-.89 1.27-1.46 1.37-2.12l.05-.05L14 5.9z" fill="#000"/></svg>`;
+
+// A media slot tries the real file first; if it 404s it falls back to a tinted placeholder.
+let slotCount = 0;
+function slot(p, file, label) {
+  const [a, b, c] = p.ph;
+  const angle = (slotCount++ * 47) % 360;
+  const bg = `radial-gradient(120% 90% at ${20 + (angle % 60)}% ${30 + (angle % 40)}%, ${c}55, transparent 60%), linear-gradient(${angle}deg, ${a}, ${b})`;
+  return `<div class="media" style="--ph:${bg}">
+    <div class="ph"><span class="sm">${esc(label || p.category)}</span><span class="sm">img/${p.slug}/${file}</span></div>
+    <img src="img/${p.slug}/${file}" alt="${esc(p.title)}" loading="lazy" onerror="this.remove()">
+  </div>`;
+}
+
+function nav(active) {
+  return `<nav class="nav${active ? " bar" : ""}">
+    <a href="#/" class="name"><h1 class="sr-only">${esc(SITE.name)}</h1>${esc(SITE.name)}</a>
+    <a href="#/work" class="${active === "work" ? "active" : ""}">Work</a>
+    <a href="#/about" class="${active === "about" ? "active" : ""}">About</a>
+  </nav>`;
+}
+
+let timers = [];
+function clearTimers() { timers.forEach(clearInterval); timers = []; }
+
+// A project's preview: its looping hero video, or its hero photo.
+function previewMedia(p) {
+  const h = p.media && p.media.hero;
+  if (h && !h.photo) return `<img src="${poster(p, h)}" alt=""><video class="pv" src="${loopSrc(h)}" muted loop playsinline preload="auto"></video>`;
+  return `<img src="img/${p.slug}/${h && h.photo ? h.photo : "hero"}.jpg" alt="">`;
+}
+
+function renderHome() {
+  $app.innerHTML = nav() + `<div class="home page">
+    <div class="slides">${PROJECTS.map((p, i) => `<a class="slide" href="#/work/${p.slug}" data-i="${i}" aria-label="${esc(p.category)}">${previewMedia(p)}</a>`).join("")}</div>
+    <div class="veil"></div>
+    <div class="curtain" aria-hidden="true"><i></i><i></i></div>
+    <div class="tabs" style="--n:${PROJECTS.length}">${PROJECTS.map((p, i) => `<a class="tab" href="#/work/${p.slug}" data-i="${i}">
+      <span class="bar"><i></i></span>
+      <span class="sm">${String(i + 1).padStart(2, "0")}</span>
+      <span class="tt">${esc(p.category)}</span>
+    </a>`).join("")}</div>
+  </div>
+  <footer class="sr-only">© ${esc(SITE.name)} ${SITE.year}</footer>`;
+
+  const slides = [...document.querySelectorAll(".slide")], tabs = [...document.querySelectorAll(".tab")];
+  let cur = -1, held = false;
+  const show = i => {
+    if (i === cur) return;
+    cur = i;
+    slides.forEach((s, k) => {
+      s.classList.toggle("on", k === i);
+      const v = s.querySelector("video");
+      if (v) k === i ? v.play().catch(() => {}) : v.pause();
+    });
+    tabs.forEach((t, k) => {
+      t.classList.toggle("on", k === i);
+      const bar = t.querySelector(".bar i");       // restart the progress line
+      bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = "";
+    });
+  };
+  show(0);
+  timers.push(setInterval(() => { if (!held) show((cur + 1) % slides.length); }, 6000));
+  tabs.forEach(t => {
+    t.addEventListener("mouseenter", () => { held = true; show(+t.dataset.i); });
+    t.addEventListener("mouseleave", () => { held = false; });
+  });
+}
+
+function renderWork() {
+  $app.innerHTML = nav("work") + `<main class="work page">
+    <ol>${PROJECTS.map((p, i) => `<li><a href="#/work/${p.slug}" data-i="${i}">
+      <span class="sm muted">${String(i + 1).padStart(2, "0")}</span>
+      <span class="t">${esc(p.category)}</span>
+      <span class="sm cat">${esc(p.title)}${p.year ? " · " + esc(p.year) : ""}</span>
+    </a></li>`).join("")}</ol>
+    ${PROJECTS.map((p, i) => `<div class="preview" data-p="${i}"><div class="media">${previewMedia(p)}</div></div>`).join("")}
+  </main>`;
+  const previews = [...document.querySelectorAll(".preview")];
+  document.querySelectorAll(".work li a").forEach(a => {
+    const pv = previews[a.dataset.i], v = pv.querySelector("video");
+    a.addEventListener("mouseenter", () => { pv.classList.add("on"); v && v.play().catch(() => {}); });
+    a.addEventListener("mouseleave", () => { pv.classList.remove("on"); v && v.pause(); });
+  });
+}
+
+function renderAbout() {
+  const list = xs => `<ul>${xs.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  $app.innerHTML = nav("about") + `<main class="about page">
+    <p class="lead">${esc(ABOUT.lead)}</p>
+    <section>
+      <p class="sm">${esc(SITE.role)}, ${esc(SITE.city)}</p>
+      <p><a href="mailto:${SITE.email}">${esc(SITE.email)}</a></p>
+    </section>
+    <section><p>${esc(ABOUT.body)}</p></section>
+    <section class="full">
+      <h2 class="sm">Experience</h2>
+      <div>${ABOUT.experience.map(([r, w, y]) => `<div class="row"><div><p>${esc(r)}</p><p class="muted">${esc(w)}</p></div><p class="sm">${esc(y)}</p></div>`).join("")}</div>
+    </section>
+    <section class="full cols">
+      <div><h2 class="sm" style="margin-bottom:1rem">Skills</h2>${list(ABOUT.skills)}</div>
+      <div><h2 class="sm" style="margin-bottom:1rem">Tools</h2>${list(ABOUT.tools)}</div>
+      <div><h2 class="sm" style="margin-bottom:1rem">Languages</h2>${list(ABOUT.languages)}</div>
+    </section>
+    <p class="sm full muted">© ${esc(SITE.name)} ${SITE.year}</p>
+  </main>`;
+}
+
+function embedUrl(v) {
+  let m;
+  if ((m = v.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/))) return `https://www.youtube.com/embed/${m[1]}?autoplay=1&rel=0`;
+  if ((m = v.match(/vimeo\.com\/(?:video\/)?(\d+)/))) return `https://player.vimeo.com/video/${m[1]}?autoplay=1`;
+  return null;
+}
+
+function renderProject(p) {
+  const idx = PROJECTS.indexOf(p);
+  const next = PROJECTS[(idx + 1) % PROJECTS.length];
+  const isTrailer = "video" in p;
+
+  const player = `<div class="player" id="player">${slot(p, "04.jpg", "Trailer still")}
+    <button class="play" id="play"><i class="sm">${p.video ? "Play trailer" : "Add trailer link in PROJECTS"}</i></button></div>`;
+
+  const hero = p.media ? heroMedia(p, p.media.hero)
+    : `<div class="hero"><div class="veil"></div>${slot(p, "hero.jpg", "Hero")}</div>`;
+  const rowClass = { three: "row3", pair: "pair", wide: "bleed", padded: "padded" };
+  const flow = p.media
+    ? p.media.rows.map(([kind, fs]) => `<div class="${rowClass[kind]}">${fs.map(f => f.photo ? photo(p, f) : film(p, f)).join("")}</div>`).join("")
+    : `<div class="row3">${slot(p, "01.jpg")}${slot(p, "02.jpg")}${slot(p, "03.jpg")}</div>
+      ${isTrailer ? player : `<div class="bleed">${slot(p, "04.jpg")}</div>`}
+      <div class="padded">${slot(p, "05.jpg")}</div>
+      <div class="row3 tall">${slot(p, "06.jpg")}${slot(p, "07.jpg")}${slot(p, "08.jpg")}</div>
+      <div class="split">${slot(p, "09.jpg")}${slot(p, "10.jpg")}</div>`;
+
+  $app.innerHTML = `<article class="page">
+    ${hero}
+    <header class="phead" id="phead">
+      <div class="l"><h1>${esc(p.title)}</h1><p class="sm">${esc(p.category)}</p></div>
+      <div class="r">
+        ${isTrailer && p.video ? `<button id="playTop">Play</button>` : ""}
+        <a href="#/">Home</a>
+        <button id="infoBtn" aria-expanded="false">Info</button>
+        <a href="#/work" aria-label="Close">${CLOSE}</a>
+      </div>
+    </header>
+
+    <div class="flow">${flow}</div>
+
+    <div class="info" id="info" role="dialog" aria-label="Project info">
+      ${p.info.map(l => `<p>${esc(l)}</p>`).join("")}
+      <div class="meta sm"><span>${esc(p.category)}</span><span>${esc(p.year)}</span></div>
+    </div>
+  </article>
+
+  <section class="next">
+    <p class="sm">© ${esc(SITE.name)} ${SITE.year}</p>
+    <a href="#/work/${next.slug}">
+      <div class="nt"><h3>${esc(next.title)}</h3><p class="sm">${esc(next.category)}</p></div>
+      <div class="th">${slot(next, "hero.jpg")}</div>
+    </a>
+  </section>`;
+
+  document.querySelector(".next .th .media").style.height = "100%";
+  requestAnimationFrame(() => document.getElementById("phead").classList.add("in"));
+
+  const info = document.getElementById("info"), btn = document.getElementById("infoBtn");
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    const open = info.classList.toggle("open");
+    btn.setAttribute("aria-expanded", open);
+  });
+  document.addEventListener("click", closeInfo);
+
+  if (document.querySelector(".film, .film-hero")) wireFilms();
+
+  if (isTrailer) {
+    const start = () => {
+      if (!p.video) return;
+      const box = document.getElementById("player");
+      const url = embedUrl(p.video);
+      box.innerHTML = url
+        ? `<iframe src="${url}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${esc(p.title)} trailer"></iframe>`
+        : `<video src="${esc(p.video)}" controls autoplay playsinline></video>`;
+      box.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+    document.getElementById("play").addEventListener("click", start);
+    const top = document.getElementById("playTop");
+    if (top) top.addEventListener("click", start);
+  }
+}
+
+/* ---------- films: every video loops on load; one can have sound at a time; click for full quality ---------- */
+const filmSrc = f => `video/hd/${f.id}.mp4`;                // sharper copy for full screen
+const loopSrc = f => `video/${f.id}.mp4`;                   // small copy that autoplays
+const poster = (p, f) => `img/${p.slug}/posters/${f.id}.jpg`;
+const ICON_ON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const ICON_OFF = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const soundBtn = `<button class="snd" aria-label="Unmute">${ICON_OFF}</button>`;
+const loopVideo = (p, f, id) => `<video ${id ? `id="${id}" ` : ""}src="${loopSrc(f)}" poster="${poster(p, f)}" muted loop playsinline autoplay preload="metadata"></video>`;
+
+function photo(p, f) {
+  return `<figure class="photo"><img src="img/${p.slug}/${f.photo}.jpg" alt="${esc(p.category)}" loading="lazy"></figure>`;
+}
+
+function heroMedia(p, f) {
+  if (!f.photo) return heroFilm(p, f);
+  return `<div class="hero"><div class="veil"></div><div class="curtain" aria-hidden="true"><i></i><i></i></div><div class="media"><img src="img/${p.slug}/${f.photo}.jpg" alt="${esc(p.title)}"></div></div>`;
+}
+
+function film(p, f) {
+  return `<figure class="film${f.wide ? " wide" : ""}" data-src="${filmSrc(f)}" data-title="${esc(f.name)} · ${esc(f.kind)}" tabindex="0" role="button" aria-label="Open ${esc(f.name)} ${esc(f.kind)} full screen">
+    <div class="media">${loopVideo(p, f)}${soundBtn}</div>
+    <figcaption><span>${esc(f.name)}</span><span class="sm">${esc(f.kind)}</span></figcaption>
+  </figure>`;
+}
+
+function heroFilm(p, f) {
+  return `<div class="hero film-hero" data-src="${filmSrc(f)}" data-title="${esc(f.name)} · ${esc(f.kind)}">
+    <div class="veil"></div><div class="curtain" aria-hidden="true"><i></i><i></i></div>
+    <div class="media">${loopVideo(p, f, "heroVid")}</div>
+    <button class="watch sm" id="watch">Full screen</button>
+    ${soundBtn}
+  </div>`;
+}
+
+function setSound(v, on) {
+  // Only one video is audible at a time: turning one on mutes the rest.
+  document.querySelectorAll(".film video, .film-hero video").forEach(o => {
+    const audible = on && o === v;
+    o.muted = !audible;
+    const b = o.closest(".film, .film-hero").querySelector(".snd");
+    b.innerHTML = audible ? ICON_ON : ICON_OFF;
+    b.setAttribute("aria-label", audible ? "Mute" : "Unmute");
+  });
+}
+
+let filmObserver;
+function wireFilms() {
+  const hero = document.querySelector(".film-hero"), hv = document.getElementById("heroVid");
+  document.getElementById("watch")?.addEventListener("click", () => openFilm(hero.dataset.src, hero.dataset.title));
+
+  document.querySelectorAll(".film, .film-hero").forEach(el => {
+    const v = el.querySelector("video");
+    el.querySelector(".snd").addEventListener("click", e => { e.stopPropagation(); setSound(v, v.muted); v.play().catch(() => {}); });
+    if (!el.classList.contains("film")) return;
+    el.addEventListener("click", () => openFilm(el.dataset.src, el.dataset.title));
+    el.addEventListener("keydown", e => { if (e.target === el && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openFilm(el.dataset.src, el.dataset.title); } });
+  });
+
+  // Everything plays on its own; off-screen videos pause so the page stays smooth.
+  filmObserver?.disconnect();
+  filmObserver = new IntersectionObserver(entries => entries.forEach(({ target: v, isIntersecting }) => {
+    v.dataset.visible = isIntersecting ? "1" : "";
+    if (isIntersecting && document.getElementById("lb")?.hidden !== false) v.play().catch(() => {});
+    else v.pause();
+  }), { threshold: 0.2 });
+  document.querySelectorAll(".film video, .film-hero video").forEach(v => filmObserver.observe(v));
+
+  // Sound starts on the opening video when the browser allows it (usually after the visitor has clicked
+  // through from the Work page); otherwise it stays muted until they press the speaker.
+  if (!hv) return;
+  hv.muted = false;
+  hv.play().then(() => setSound(hv, true)).catch(() => { hv.muted = true; hv.play().catch(() => {}); });
+}
+
+function lightbox() {
+  let lb = document.getElementById("lb");
+  if (lb) return lb;
+  lb = document.createElement("div");
+  lb.id = "lb"; lb.className = "lb"; lb.hidden = true;
+  lb.innerHTML = `<button class="lb-x" aria-label="Close">${CLOSE}</button><video controls playsinline></video><p class="sm lb-t"></p>`;
+  document.body.appendChild(lb);
+  lb.addEventListener("click", e => { if (e.target === lb || e.target.closest(".lb-x")) closeFilm(); });
+  return lb;
+}
+function openFilm(src, title) {
+  document.querySelectorAll("video").forEach(v => v.pause());
+  const lb = lightbox(), v = lb.querySelector("video");
+  lb.querySelector(".lb-t").textContent = title;
+  v.src = src; lb.hidden = false; document.body.style.overflow = "hidden";
+  v.play().catch(() => {});
+}
+function closeFilm() {
+  const lb = document.getElementById("lb");
+  if (!lb || lb.hidden) return;
+  const v = lb.querySelector("video");
+  v.pause(); v.removeAttribute("src"); v.load();
+  lb.hidden = true; document.body.style.overflow = "";
+  document.querySelectorAll('video[data-visible="1"]').forEach(o => o.play().catch(() => {}));
+}
+
+function closeInfo(e) {
+  const info = document.getElementById("info");
+  if (info && !info.contains(e.target)) { info.classList.remove("open"); document.getElementById("infoBtn")?.setAttribute("aria-expanded", false); }
+}
+
+function route() {
+  clearTimers();
+  closeFilm();
+  filmObserver?.disconnect();
+  document.removeEventListener("click", closeInfo);
+  slotCount = 0;
+  const h = location.hash.replace(/^#/, "") || "/";
+  const m = h.match(/^\/work\/([\w-]+)/);
+  const p = m && PROJECTS.find(x => x.slug === m[1]);
+  if (p) { renderProject(p); document.title = `${p.title} | ${SITE.name}`; }
+  else if (h.startsWith("/work")) { renderWork(); document.title = `Work | ${SITE.name}`; }
+  else if (h.startsWith("/about")) { renderAbout(); document.title = `About | ${SITE.name}`; }
+  else { renderHome(); document.title = SITE.name; }
+  window.scrollTo(0, 0);
+  // backup for the animationend listener: the reveal is over by 2.1s, so the curtain always goes
+  setTimeout(() => document.querySelectorAll(".curtain").forEach(c => c.remove()), 2300);
+}
+addEventListener("hashchange", route);
+document.addEventListener("playing", e => e.target.classList && e.target.classList.add("live"), true);
+// Once the bars have parted, remove the curtain entirely so nothing lingers on the page.
+document.addEventListener("animationend", e => { if (e.animationName === "part") e.target.closest(".curtain")?.remove(); }, true);
+addEventListener("keydown", e => { if (e.key === "Escape") { closeFilm(); document.getElementById("info")?.classList.remove("open"); } });
+route();
+</script>
+</body>
+</html>
