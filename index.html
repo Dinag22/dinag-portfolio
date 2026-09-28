@@ -432,7 +432,7 @@ function slot(p, file, label) {
   const bg = `radial-gradient(120% 90% at ${20 + (angle % 60)}% ${30 + (angle % 40)}%, ${c}55, transparent 60%), linear-gradient(${angle}deg, ${a}, ${b})`;
   return `<div class="media" style="--ph:${bg}">
     <div class="ph"><span class="sm">${esc(label || p.category)}</span><span class="sm">img/${p.slug}/${file}</span></div>
-    <img src="img/${p.slug}/${file}" alt="${esc(p.title)}" loading="lazy" onerror="this.remove()">
+    <img src="img/${p.slug}/${file}" alt="${esc(p.category)}" loading="lazy" onerror="this.remove()">
   </div>`;
 }
 
@@ -559,7 +559,7 @@ function renderProject(p) {
   $app.innerHTML = `<article class="page">
     ${hero}
     <header class="phead" id="phead">
-      <div class="l"><h1>${esc(p.title)}</h1><p class="sm">${esc(p.category)}</p></div>
+      <div class="l"><h1>${esc(p.category)}</h1><p class="sm">${esc(p.title)}</p></div>
       <div class="r">
         ${isTrailer && p.video ? `<button id="playTop">Play</button>` : ""}
         <a href="#/">Home</a>
@@ -579,7 +579,7 @@ function renderProject(p) {
   <section class="next">
     <p class="sm">© ${esc(SITE.name)} ${SITE.year}</p>
     <a href="#/work/${next.slug}">
-      <div class="nt"><h3>${esc(next.title)}</h3><p class="sm">${esc(next.category)}</p></div>
+      <div class="nt"><h3>${esc(next.category)}</h3><p class="sm">${esc(next.title)}</p></div>
       <div class="th">${slot(next, "hero.jpg")}</div>
     </a>
   </section>`;
@@ -628,7 +628,7 @@ function photo(p, f) {
 
 function heroMedia(p, f) {
   if (!f.photo) return heroFilm(p, f);
-  return `<div class="hero"><div class="veil"></div><div class="curtain" aria-hidden="true"><i></i><i></i></div><div class="media"><img src="img/${p.slug}/${f.photo}.jpg" alt="${esc(p.title)}"></div></div>`;
+  return `<div class="hero"><div class="veil"></div><div class="curtain" aria-hidden="true"><i></i><i></i></div><div class="media"><img src="img/${p.slug}/${f.photo}.jpg" alt="${esc(p.category)}"></div></div>`;
 }
 
 function film(p, f) {
@@ -727,7 +727,7 @@ function route() {
   const h = location.hash.replace(/^#/, "") || "/";
   const m = h.match(/^\/work\/([\w-]+)/);
   const p = m && PROJECTS.find(x => x.slug === m[1]);
-  if (p) { renderProject(p); document.title = `${p.title} | ${SITE.name}`; }
+  if (p) { renderProject(p); document.title = `${p.category} | ${SITE.name}`; }
   else if (h.startsWith("/work")) { renderWork(); document.title = `Work | ${SITE.name}`; }
   else if (h.startsWith("/about")) { renderAbout(); document.title = `About | ${SITE.name}`; }
   else { renderHome(); document.title = SITE.name; }
