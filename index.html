@@ -105,6 +105,18 @@
   @keyframes fill { to { width: 100%; } }
   @media (min-width: 768px) { .tabs { gap: 20px; } .tab .tt { font-size: var(--fs-1); } }
   @media (max-width: 767px) { .tab .tt { font-size: var(--fs--1); } }
+  /* phones: all sections stacked in rows, every clip playing, each row opens its section */
+  .slide .lbl { display: none; }
+  @media (max-width: 767px) {
+    .home .slides { display: flex; flex-direction: column; gap: 2px; }
+    .home .slide { position: relative; inset: auto; flex: 1; min-height: 0; opacity: 1; overflow: hidden; }
+    .home .slide::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.1) 55%); }
+    .home .slide:first-child::after { background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.1) 55%, rgba(0,0,0,.35)); }
+    .home .veil, .home .tabs { display: none; }
+    .slide .lbl { display: flex; align-items: baseline; gap: 12px; position: absolute; left: var(--pad); right: var(--pad); bottom: var(--pad); z-index: 2; color: #fff; }
+    .slide .lbl .tt { font-family: var(--display); font-size: var(--fs-3); line-height: 1; }
+  }
 
   /* ---------- work index ---------- */
   /* list on the left half, hover preview on the right half */
@@ -473,7 +485,7 @@ function thumbSrc(p) {
 
 function renderHome() {
   $app.innerHTML = nav() + `<div class="home page">
-    <div class="slides">${PROJECTS.map((p, i) => `<a class="slide" href="#/work/${p.slug}" data-i="${i}" aria-label="${esc(p.category)}">${previewMedia(p)}</a>`).join("")}</div>
+    <div class="slides">${PROJECTS.map((p, i) => `<a class="slide" href="#/work/${p.slug}" data-i="${i}" aria-label="${esc(p.category)}">${previewMedia(p)}<span class="lbl" aria-hidden="true"><span class="sm">${String(i + 1).padStart(2, "0")}</span><span class="tt">${esc(p.category)}</span></span></a>`).join("")}</div>
     <div class="veil"></div>
     <div class="curtain" aria-hidden="true"><i></i><i></i></div>
     <div class="tabs" style="--n:${PROJECTS.length}">${PROJECTS.map((p, i) => `<a class="tab" href="#/work/${p.slug}" data-i="${i}">
@@ -500,6 +512,15 @@ function renderHome() {
       bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = "";
     });
   };
+  if (PHONE.matches) {                               // phones: every row plays at once, no rotation
+    const vids = slides.map(s => s.querySelector("video")).filter(Boolean);
+    const playAll = () => vids.forEach(v => { v.muted = true; v.play().catch(() => {}); });
+    vids.forEach(v => { v.muted = true; v.autoplay = true; v.addEventListener("canplay", playAll, { once: true }); });
+    playAll();
+    // Some phones (e.g. iPhone in Low Power Mode) block autoplay until the first touch.
+    document.addEventListener("touchstart", playAll, { once: true, passive: true });
+    return;
+  }
   show(0);
   timers.push(setInterval(() => { if (!held) show((cur + 1) % slides.length); }, 6000));
   tabs.forEach(t => {
@@ -766,6 +787,8 @@ function route() {
   setTimeout(() => document.querySelectorAll(".curtain").forEach(c => c.remove()), 2300);
 }
 let onScroll = null;
+const PHONE = matchMedia("(max-width: 767px)");
+PHONE.addEventListener("change", () => { if ((location.hash.replace(/^#/, "") || "/") === "/") route(); });
 addEventListener("scroll", () => onScroll && onScroll(), { passive: true });
 addEventListener("hashchange", route);
 document.addEventListener("playing", e => e.target.classList && e.target.classList.add("live"), true);
