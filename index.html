@@ -373,6 +373,7 @@ const SITE = {
 };
 
 // Media pages: `hero` is the full-screen opener, `rows` follow it.
+// `thumb` (optional) is a still in img/<slug>/ used for the section's thumbnails instead of its hero.
 // Row kinds: "three" (3 across), "pair" (2 large, centred), "wide" (edge to edge), "padded" (full width, small margins).
 // A video item is { name, kind, id, wide? }: loop copy video/<id>.mp4, full-screen copy video/hd/<id>.mp4,
 // still img/<slug>/posters/<id>.jpg. A photo item is { photo: "<file>" } for img/<slug>/<file>.jpg.
@@ -408,6 +409,7 @@ const ALL_PROJECTS = [
   {
     slug: "horror",
     title: "Short Films",
+    thumb: "thumb.jpg",
     category: "Horror",
     year: "",
     info: ["Horror shorts and stills", "Swimmer, Crack Red, Zombie Addiction, Feed Bleed, Naini"],
@@ -510,6 +512,7 @@ function previewMedia(p) {
 }
 
 function thumbSrc(p) {
+  if (p.thumb) return `img/${p.slug}/${p.thumb}`;
   const h = p.media && p.media.hero;
   return h && !h.photo ? poster(p, h) : `img/${p.slug}/${h && h.photo ? h.photo : "hero"}.jpg`;
 }
@@ -568,7 +571,7 @@ function renderWork() {
       <span class="sm cat">${esc(p.title)}${p.year ? " · " + esc(p.year) : ""}</span>
       <img class="mth" src="${thumbSrc(p)}" alt="" loading="lazy">
     </a></li>`).join("")}</ol>
-    ${PROJECTS.map((p, i) => `<div class="preview" data-p="${i}"><div class="media">${previewMedia(p)}</div></div>`).join("")}
+    ${PROJECTS.map((p, i) => `<div class="preview" data-p="${i}"><div class="media">${p.thumb ? `<img src="${thumbSrc(p)}" alt="">` : previewMedia(p)}</div></div>`).join("")}
   </main>`;
   const previews = [...document.querySelectorAll(".preview")];
   document.querySelectorAll(".work li a").forEach(a => {
@@ -685,7 +688,7 @@ function renderProject(p) {
     <div class="sm foot"><p>Like this work? <a href="#/contact">Get in touch</a></p><p class="muted">© ${esc(SITE.name)} ${SITE.year}</p></div>
     <a href="#/work/${next.slug}" aria-label="Next: ${esc(next.category)}">
       <div class="nt"><h3>${esc(next.category)}</h3><p class="sm">${esc(next.title)}</p></div>
-      <div class="th">${slot(next, "hero.jpg")}</div>
+      <div class="th">${slot(next, next.thumb || "hero.jpg")}</div>
     </a>
   </section>`;
 
