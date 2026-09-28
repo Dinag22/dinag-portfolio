@@ -160,6 +160,12 @@
   .about .row .muted, .muted { color: rgba(0,0,0,.55); }
   .about .cols { display: grid; gap: 3rem; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
   .about ul { list-style: none; display: grid; gap: .35rem; }
+  .about .cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem;
+    padding: 1.6rem 0; border-top: 1px solid #000; border-bottom: 1px solid #000; }
+  .about .cta p { font-family: var(--display); font-size: var(--fs-2); line-height: 1.2; max-width: 36rem; }
+  .about .btn { display: inline-block; padding: .8rem 1.4rem; background: #000; color: #fff; text-decoration: none !important;
+    transition: background .25s var(--ease), color .25s var(--ease); }
+  .about .btn:hover { background: transparent; color: #000; box-shadow: inset 0 0 0 1px #000; }
   @media (min-width: 900px) {
     .about { grid-template-columns: 1fr 2fr; column-gap: 5rem; }
     .about .lead, .about .full { grid-column: 1 / -1; }
@@ -423,19 +429,19 @@ const ALL_PROJECTS = [
 const PROJECTS = ALL_PROJECTS.filter(p => !p.hidden);
 
 const ABOUT = {
-  lead: "People intrigue me: their passions, connections and struggles. With a deep love for horror and thriller films, I write to unsettle or captivate, crafting stories that linger.",
-  body: "Alongside filmmaking I have built a strong foundation in food and product photography, translating textures and flavours into striking visuals. Having shot several short films and commercial projects, I have sharpened my understanding of both storytelling and aesthetics. I thrive in collaborative environments, always eager to contribute where it matters.",
+  lead: "I make food look irresistible and horror feel unbearable. It’s the same craft: light, texture and timing that make you feel something before you think.",
+  body: "Based in Mumbai, I shoot food and product films for brands, restaurants and social media, and write and direct horror shorts. Recent work for Hakkasan, Yauatcha, Cin Cin, HOSA, Toa 66, Pincode, Supa San, TU and Hermod.",
+  cta: "Available for brand, restaurant and product shoots: reels, campaigns and launches.",
   experience: [
-    ["Documentary Film (ongoing)", "The Hills Have Gold", "2024 –"],
+    ["Food and Product Films", "Hakkasan, Yauatcha, Cin Cin, HOSA, Toa 66, Pincode, Supa San, TU, Hermod", "2024 –"],
+    ["Horror Shorts", "Swimmer, Crack Red, Zombie Addiction, Feed Bleed, Naini", ""],
+    ["Documentary Film (in development)", "The Hills Have Gold", "2024 –"],
     ["Food and Product Photography", "ADKO", "2024 – 2025"],
     ["Camera Assistant to DoP Arun Verma", "Feature film Mangla, Rash Productions", "June 2024"],
-    ["Social Media Marketing", "Staunch Fit, Shamnad Abubacker", "Sept 2023"],
     ["Second Camera and Co-editor", "Khyber Cement ad, Nitric Films", "Aug 2023"],
     ["Concert Photography", "Uprising Edition 1, Indian Artists Collective", "June 2023"],
-    ["Non-fiction Intern", "Chalkboard Entertainment", "June – Aug 2023"],
-    ["Content Creation", "Latracal Solutions", ""],
   ],
-  skills: ["Video Editing", "Camera Operation", "Lighting / Gaffer", "Writing for Screen", "Creative Direction"],
+  services: ["Food Cinematography", "Product Films", "Reels for Social Media", "Camera and Lighting", "Editing", "Writing and Directing Horror"],
   tools: ["Adobe Premiere Pro", "Adobe Photoshop", "Adobe Lightroom", "Figma"],
   languages: ["English", "Hindi", "Bengali"],
 };
@@ -554,16 +560,19 @@ function renderAbout() {
   $app.innerHTML = nav("about") + `<main class="about page">
     <p class="lead">${esc(ABOUT.lead)}</p>
     <section>
-      <p class="sm">${esc(SITE.role)}, ${esc(SITE.city)}</p>
       <p><a href="mailto:${SITE.email}">${esc(SITE.email)}</a></p>
     </section>
     <section><p>${esc(ABOUT.body)}</p></section>
+    <section class="full cta">
+      <p>${esc(ABOUT.cta)}</p>
+      <a class="btn" href="mailto:${SITE.email}">Get in touch</a>
+    </section>
     <section class="full">
-      <h2 class="sm">Experience</h2>
+      <h2 class="sm">Selected Work</h2>
       <div>${ABOUT.experience.map(([r, w, y]) => `<div class="row"><div><p>${esc(r)}</p><p class="muted">${esc(w)}</p></div><p class="sm">${esc(y)}</p></div>`).join("")}</div>
     </section>
     <section class="full cols">
-      <div><h2 class="sm" style="margin-bottom:1rem">Skills</h2>${list(ABOUT.skills)}</div>
+      <div><h2 class="sm" style="margin-bottom:1rem">Services</h2>${list(ABOUT.services)}</div>
       <div><h2 class="sm" style="margin-bottom:1rem">Tools</h2>${list(ABOUT.tools)}</div>
       <div><h2 class="sm" style="margin-bottom:1rem">Languages</h2>${list(ABOUT.languages)}</div>
     </section>
