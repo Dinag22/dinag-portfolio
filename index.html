@@ -68,7 +68,7 @@
     content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .28; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
-  .ph span { position: relative; z-index: 1; }
+  .ph span { display: none; }
 
   /* ---------- global nav: name (home) top-left, Work + About top-right ---------- */
   .nav {
@@ -77,7 +77,8 @@
     padding: var(--pad); color: var(--white); mix-blend-mode: difference;
   }
   .nav .name { margin-right: auto; white-space: nowrap; font-size: var(--fs-2); line-height: 1; }
-  .nav a.active { opacity: .45; }
+  .nav a.active { text-decoration: underline 1px currentColor !important; text-underline-offset: 4px; }
+  .nav .role { display: block; margin-top: 6px; font-family: var(--body); font-size: var(--fs--1); line-height: 1.3; }
   /* inner pages: solid bar so it never sits on top of the content */
   .nav.bar { background: var(--white); color: var(--black); mix-blend-mode: normal; }
 
@@ -129,7 +130,12 @@
   .work .preview .media { width: 100%; height: 100%; }
   .work .preview video, .work .preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .work .preview.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  @media (max-width: 767px) { .work .preview { display: none; } .work li a { grid-template-columns: 1.8rem 1fr; } }
+  .work li a .mth { display: none; }
+  @media (max-width: 767px) {
+    .work .preview { display: none; }
+    .work li a { grid-template-columns: 1.8rem 1fr 88px; }
+    .work li a .mth { display: block; grid-column: 3; grid-row: 1 / span 2; width: 88px; aspect-ratio: 4 / 5; object-fit: cover; align-self: center; }
+  }
 
   /* ---------- about ---------- */
   .about { padding: 160px var(--pad) 120px; max-width: 72rem; margin: 0 auto; display: grid; gap: 4rem; }
@@ -156,10 +162,12 @@
   .phead {
     position: fixed; top: 0; left: 0; width: 100%; z-index: 30;
     display: flex; justify-content: space-between; padding: var(--pad);
-    color: var(--white); mix-blend-mode: difference;
-    opacity: 0; transition: opacity 1s var(--ease) .25s;
+    color: var(--white); text-shadow: 0 1px 12px rgba(0,0,0,.45);
+    background: linear-gradient(to bottom, rgba(0,0,0,.45), transparent);
+    opacity: 0; transition: opacity 1s var(--ease) .25s, background-color .3s var(--ease), color .3s var(--ease);
   }
   .phead.in { opacity: 1; }
+  .phead.solid { background: var(--white); color: var(--black); text-shadow: none; }
   .phead h1 { font-size: var(--fs-2); line-height: 1.1; margin-bottom: 4px; }
   .phead .r { display: flex; align-items: flex-start; gap: 20px; }
   .x { display: block; width: 18px; height: 18px; }
@@ -226,7 +234,7 @@
   .film-hero .snd { right: var(--pad); bottom: var(--pad); }
   .film figcaption > span:first-child { font-size: var(--fs-1); }
   .film figcaption { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; }
-  .film:focus-visible { outline: 1px solid #000; outline-offset: 6px; }
+  .film:focus-visible, a:focus-visible, button:focus-visible { outline: 1px solid currentColor; outline-offset: 4px; }
   .film.wide .media, .row3 .film.wide .media, .padded .film .media, .bleed .film .media { aspect-ratio: 16 / 9; width: 100%; }
   .bleed .film figcaption { padding: 0 var(--pad); }
   .photo img { width: 100%; height: auto; aspect-ratio: auto 3 / 4; }
@@ -263,7 +271,10 @@
   .next { margin-top: 200px; padding: 0 var(--pad) var(--pad); display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
   .next a { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
   .next .nt { width: 181px; }
-  .next .nt h3 { font-size: var(--fs-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .next .foot { display: grid; gap: 4px; }
+  .next .foot a { display: inline; text-decoration: underline 1px; text-underline-offset: 4px; }
+  .next .nt::before { content: "Next"; display: block; font-size: var(--fs--1); opacity: .55; margin-bottom: 4px; }
+  .next .nt h3 { font-size: var(--fs-2); line-height: 1.1; }
   .next .th { width: 181px; height: 120px; }
   .next .th { outline: 1px solid transparent; outline-offset: 4px; transition: outline-color .3s var(--ease); }
   .next .th img { filter: brightness(.8) grayscale(.3); transition: transform .6s var(--ease), filter .4s var(--ease); }
@@ -438,9 +449,10 @@ function slot(p, file, label) {
 
 function nav(active) {
   return `<nav class="nav${active ? " bar" : ""}">
-    <a href="#/" class="name"><h1 class="sr-only">${esc(SITE.name)}</h1>${esc(SITE.name)}</a>
-    <a href="#/work" class="${active === "work" ? "active" : ""}">Work</a>
-    <a href="#/about" class="${active === "about" ? "active" : ""}">About</a>
+    <a href="#/" class="name"><h1 class="sr-only">${esc(SITE.name)}</h1>${esc(SITE.name)}<span class="role">${esc(SITE.role)}, ${esc(SITE.city)}</span></a>
+    <a href="#/work" class="${active === "work" ? "active" : ""}"${active === "work" ? ' aria-current="page"' : ""}>Work</a>
+    <a href="#/about" class="${active === "about" ? "active" : ""}"${active === "about" ? ' aria-current="page"' : ""}>About</a>
+    <a href="mailto:${SITE.email}">Contact</a>
   </nav>`;
 }
 
@@ -452,6 +464,11 @@ function previewMedia(p) {
   const h = p.media && p.media.hero;
   if (h && !h.photo) return `<img src="${poster(p, h)}" alt=""><video class="pv" src="${loopSrc(h)}" muted loop playsinline preload="auto"></video>`;
   return `<img src="img/${p.slug}/${h && h.photo ? h.photo : "hero"}.jpg" alt="">`;
+}
+
+function thumbSrc(p) {
+  const h = p.media && p.media.hero;
+  return h && !h.photo ? poster(p, h) : `img/${p.slug}/${h && h.photo ? h.photo : "hero"}.jpg`;
 }
 
 function renderHome() {
@@ -497,6 +514,7 @@ function renderWork() {
       <span class="sm muted">${String(i + 1).padStart(2, "0")}</span>
       <span class="t">${esc(p.category)}</span>
       <span class="sm cat">${esc(p.title)}${p.year ? " · " + esc(p.year) : ""}</span>
+      <img class="mth" src="${thumbSrc(p)}" alt="" loading="lazy">
     </a></li>`).join("")}</ol>
     ${PROJECTS.map((p, i) => `<div class="preview" data-p="${i}"><div class="media">${previewMedia(p)}</div></div>`).join("")}
   </main>`;
@@ -505,6 +523,8 @@ function renderWork() {
     const pv = previews[a.dataset.i], v = pv.querySelector("video");
     a.addEventListener("mouseenter", () => { pv.classList.add("on"); v && v.play().catch(() => {}); });
     a.addEventListener("mouseleave", () => { pv.classList.remove("on"); v && v.pause(); });
+    a.addEventListener("focus", () => { pv.classList.add("on"); v && v.play().catch(() => {}); });
+    a.addEventListener("blur", () => { pv.classList.remove("on"); v && v.pause(); });
   });
 }
 
@@ -562,9 +582,11 @@ function renderProject(p) {
       <div class="l"><h1>${esc(p.category)}</h1><p class="sm">${esc(p.title)}</p></div>
       <div class="r">
         ${isTrailer && p.video ? `<button id="playTop">Play</button>` : ""}
-        <a href="#/">Home</a>
-        <button id="infoBtn" aria-expanded="false">Info</button>
-        <a href="#/work" aria-label="Close">${CLOSE}</a>
+        <button id="infoBtn" aria-expanded="false" aria-controls="info">Info</button>
+        <a href="#/work">Work</a>
+        <a href="#/about">About</a>
+        <a href="mailto:${SITE.email}">Contact</a>
+        <a href="#/work" aria-label="Close, back to Work">${CLOSE}</a>
       </div>
     </header>
 
@@ -577,15 +599,18 @@ function renderProject(p) {
   </article>
 
   <section class="next">
-    <p class="sm">© ${esc(SITE.name)} ${SITE.year}</p>
-    <a href="#/work/${next.slug}">
+    <div class="sm foot"><p>Like this work? <a href="mailto:${SITE.email}">${esc(SITE.email)}</a></p><p class="muted">© ${esc(SITE.name)} ${SITE.year}</p></div>
+    <a href="#/work/${next.slug}" aria-label="Next: ${esc(next.category)}">
       <div class="nt"><h3>${esc(next.category)}</h3><p class="sm">${esc(next.title)}</p></div>
       <div class="th">${slot(next, "hero.jpg")}</div>
     </a>
   </section>`;
 
   document.querySelector(".next .th .media").style.height = "100%";
-  requestAnimationFrame(() => document.getElementById("phead").classList.add("in"));
+  const phead = document.getElementById("phead"), heroEl = document.querySelector(".hero");
+  requestAnimationFrame(() => phead.classList.add("in"));
+  onScroll = () => phead.classList.toggle("solid", scrollY > (heroEl ? heroEl.offsetHeight : 0) - phead.offsetHeight);
+  onScroll();
 
   const info = document.getElementById("info"), btn = document.getElementById("infoBtn");
   btn.addEventListener("click", e => {
@@ -697,11 +722,14 @@ function lightbox() {
   lb.addEventListener("click", e => { if (e.target === lb || e.target.closest(".lb-x")) closeFilm(); });
   return lb;
 }
+let lastFocus;
 function openFilm(src, title) {
   document.querySelectorAll("video").forEach(v => v.pause());
   const lb = lightbox(), v = lb.querySelector("video");
   lb.querySelector(".lb-t").textContent = title;
+  lastFocus = document.activeElement;
   v.src = src; lb.hidden = false; document.body.style.overflow = "hidden";
+  lb.querySelector(".lb-x").focus();
   v.play().catch(() => {});
 }
 function closeFilm() {
@@ -710,6 +738,7 @@ function closeFilm() {
   const v = lb.querySelector("video");
   v.pause(); v.removeAttribute("src"); v.load();
   lb.hidden = true; document.body.style.overflow = "";
+  lastFocus?.focus?.();
   document.querySelectorAll('video[data-visible="1"]').forEach(o => o.play().catch(() => {}));
 }
 
@@ -719,6 +748,7 @@ function closeInfo(e) {
 }
 
 function route() {
+  onScroll = null;
   clearTimers();
   closeFilm();
   filmObserver?.disconnect();
@@ -735,6 +765,8 @@ function route() {
   // backup for the animationend listener: the reveal is over by 2.1s, so the curtain always goes
   setTimeout(() => document.querySelectorAll(".curtain").forEach(c => c.remove()), 2300);
 }
+let onScroll = null;
+addEventListener("scroll", () => onScroll && onScroll(), { passive: true });
 addEventListener("hashchange", route);
 document.addEventListener("playing", e => e.target.classList && e.target.classList.add("live"), true);
 // Once the bars have parted, remove the curtain entirely so nothing lingers on the page.
