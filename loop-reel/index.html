@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loop Reel</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #eee;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+  }
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    padding: 60px 24px;
+  }
+  .piece {
+    position: relative;
+    max-width: 100%;
+  }
+  .piece video {
+    display: block;
+    max-width: 100%;
+    max-height: 82vh;
+    background: #111;
+  }
+  .piece.wide video { width: 720px; max-width: 90vw; }
+  .piece.tall video { width: 340px; max-width: 80vw; }
+
+  .label {
+    margin-top: 10px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #888;
+    text-align: center;
+  }
+
+  .sound-btn {
+    position: absolute;
+    bottom: 42px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    backdrop-filter: blur(2px);
+  }
+  .sound-btn:hover { background: rgba(0,0,0,0.75); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="piece wide">
+    <video
+      id="v1"
+      src="FEED_BLEED_web.mp4"
+      poster="feed_bleed_poster.jpg"
+      autoplay
+      loop
+      muted
+      playsinline
+    ></video>
+    <button class="sound-btn" onclick="toggleSound('v1', this)" aria-label="Toggle sound">🔇</button>
+    <div class="label">Feed / Bleed</div>
+  </div>
+
+  <div class="piece tall">
+    <video
+      id="v2"
+      src="Zombie_Addiction_3_web.mp4"
+      poster="zombie_addiction_poster.jpg"
+      autoplay
+      loop
+      muted
+      playsinline
+    ></video>
+    <button class="sound-btn" onclick="toggleSound('v2', this)" aria-label="Toggle sound">🔇</button>
+    <div class="label">Zombie Addiction 3</div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSound(id, btn) {
+    const v = document.getElementById(id);
+    v.muted = !v.muted;
+    btn.textContent = v.muted ? '🔇' : '🔊';
+  }
+</script>
+
+</body>
+</html>
