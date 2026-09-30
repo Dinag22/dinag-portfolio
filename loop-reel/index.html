@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loop Reel</title>
+<title>Dinag Sengupta</title>
+<link rel="icon" href="../favicon.svg">
 <style>
   * { box-sizing: border-box; }
   html, body {
@@ -14,39 +15,102 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     min-height: 100vh;
   }
+
+  header {
+    text-align: center;
+    padding: 56px 16px 8px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  header a {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #888;
+    text-decoration: none;
+    border-bottom: 1px solid #444;
+    padding-bottom: 2px;
+  }
+  header a:hover { color: #fff; border-color: #fff; }
+
   .wrap {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: center;
     gap: 40px;
-    padding: 60px 24px;
+    padding: 48px 16px;
+    max-width: 1100px;
+    margin: 0 auto;
   }
   .piece {
     position: relative;
     max-width: 100%;
   }
-  .piece video {
+  .piece.wide { flex-basis: 100%; display: flex; flex-direction: column; align-items: center; }
+
+  .frame {
+    position: relative;
+    cursor: pointer;
+  }
+  .frame video {
     display: block;
     max-width: 100%;
     max-height: 82vh;
     background: #111;
   }
-  .piece.wide video { width: 720px; max-width: 90vw; }
-  .piece.tall video { width: 340px; max-width: 80vw; }
+  .piece.wide video { width: 900px; }
+  .piece.tall video { width: 340px; }
+
+  /* play icon shown while a video is paused */
+  .frame::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l8 5-8 5z' fill='%23fff'/%3E%3C/svg%3E") center / 36px no-repeat;
+    border: 1px solid rgba(255,255,255,0.35);
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+  }
+  .frame.paused::after { opacity: 1; }
 
   .label {
-    margin-top: 10px;
+    margin-top: 12px;
+    text-align: center;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .piece.wide .label { max-width: 600px; }
+  .label .title {
     font-size: 13px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #888;
-    text-align: center;
+    color: #ccc;
+  }
+  .label .line {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #777;
   }
 
   .sound-btn {
     position: absolute;
-    bottom: 42px;
+    bottom: 12px;
     right: 12px;
     width: 36px;
     height: 36px;
@@ -62,48 +126,175 @@
     backdrop-filter: blur(2px);
   }
   .sound-btn:hover { background: rgba(0,0,0,0.75); }
+
+  /* photos: two per row, both photos in a row share the same height */
+  .photos {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .photos .row { display: flex; gap: 16px; }
+  .photos img {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+  }
+  @media (max-width: 600px) {
+    .photos .row, .photos { gap: 8px; }
+  }
 </style>
 </head>
 <body>
 
+<header>
+  <h1>Dinag Sengupta</h1>
+  <a href="https://dinag-portfolio.vercel.app/">View full portfolio &rarr;</a>
+</header>
+
 <div class="wrap">
 
-  <div class="piece wide">
-    <video
-      id="v1"
-      src="FEED_BLEED_web.mp4"
-      poster="feed_bleed_poster.jpg"
-      autoplay
-      loop
-      muted
-      playsinline
-    ></video>
-    <button class="sound-btn" onclick="toggleSound('v1', this)" aria-label="Toggle sound">🔇</button>
-    <div class="label">Feed / Bleed</div>
+  <div class="piece tall">
+    <div class="frame">
+      <video src="Zombie_Addiction_3_web.mp4" poster="zombie_addiction_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+    <div class="label"><div class="title">Dog Pound</div><div class="line">Pressed against the plastic, screaming to be let out.</div></div>
   </div>
 
   <div class="piece tall">
-    <video
-      id="v2"
-      src="Zombie_Addiction_3_web.mp4"
-      poster="zombie_addiction_poster.jpg"
-      autoplay
-      loop
-      muted
-      playsinline
-    ></video>
-    <button class="sound-btn" onclick="toggleSound('v2', this)" aria-label="Toggle sound">🔇</button>
-    <div class="label">Zombie Addiction 3</div>
+    <div class="frame">
+      <video src="Rotisserie_Ritual_web.mp4" poster="rotisserie_ritual_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+    <div class="label"><div class="title">Rotisserie Ritual</div><div class="line">Candles, a pentagram, and a chicken that never made it to dinner.</div></div>
+  </div>
+
+  <div class="piece wide">
+    <div class="frame">
+      <video src="FEED_BLEED_web.mp4" poster="feed_bleed_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+    <div class="label"><div class="title">Feed / Bleed</div><div class="line">Something is feeding in the car park, and it's grinning.</div></div>
+  </div>
+
+  <div class="piece wide">
+    <div class="frame">
+      <video src="Swimmer_Swum_web.mp4" poster="swimmer_swum_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+    <div class="label"><div class="title">Swimmer Swum</div><div class="line">Blue cap, red teeth, one last lap.</div></div>
+  </div>
+
+  <div class="piece wide">
+    <div class="frame">
+      <video src="A_Night_at_Mums_web.mp4" poster="a_night_at_mums_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+    </div>
+    <div class="label"><div class="title">A Night at Mum's</div><div class="line">The house is asleep. The stairs are not.</div></div>
   </div>
 
 </div>
 
+<div class="photos">
+  <div class="row">
+    <img src="photos/photo-1.jpg" alt="" style="flex: 1.5004" loading="lazy">
+    <img src="photos/photo-2.jpg" alt="" style="flex: 1.25" loading="lazy">
+  </div>
+  <div class="row">
+    <img src="photos/photo-3.jpg" alt="" style="flex: 1" loading="lazy">
+    <img src="photos/photo-4.jpg" alt="" style="flex: 1" loading="lazy">
+  </div>
+</div>
+
 <script>
-  function toggleSound(id, btn) {
-    const v = document.getElementById(id);
-    v.muted = !v.muted;
-    btn.textContent = v.muted ? '🔇' : '🔊';
+  // Only the video most on screen plays; the others pause. Sound is on by default,
+  // but browsers can block sound until the viewer has tapped or clicked the page once.
+  // In that case the video plays silently and gets its sound on the first tap.
+  const frames = [...document.querySelectorAll('.frame')];
+  const videos = frames.map(f => f.querySelector('video'));
+  const visible = new Map();
+  const pausedByViewer = new Set();
+  let soundOn = true;      // what the viewer wants
+  let soundAllowed = true; // false once the browser has blocked sound
+  let justUnlocked = false;
+  let current = null;
+
+  const audible = () => soundOn && soundAllowed;
+
+  function setMuted() {
+    videos.forEach(v => v.muted = !audible());
+    document.querySelectorAll('.sound-btn').forEach(b => b.textContent = audible() ? '🔊' : '🔇');
   }
+
+  function play(v) {
+    v.muted = !audible();
+    v.play().catch(() => {
+      // blocked with sound: play silently until the viewer taps
+      soundAllowed = false;
+      setMuted();
+      v.play().catch(() => {});
+    });
+  }
+
+  function update() {
+    let best = null, bestRatio = 0;
+    visible.forEach((ratio, v) => { if (ratio > bestRatio) { best = v; bestRatio = ratio; } });
+    if (bestRatio < 0.5) best = null;
+    videos.forEach(v => { if (v !== best && !v.paused) v.pause(); });
+    if (best !== current && current) pausedByViewer.delete(current);
+    current = best;
+    if (best && best.paused && !pausedByViewer.has(best)) play(best);
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => visible.set(e.target, e.intersectionRatio));
+    update();
+  }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+  videos.forEach(v => io.observe(v));
+
+  videos.forEach((v, i) => {
+    const frame = frames[i];
+    const sync = () => frame.classList.toggle('paused', v.paused);
+    v.addEventListener('play', sync);
+    v.addEventListener('pause', sync);
+    sync();
+
+    // clicking a video plays / pauses it (it keeps looping while playing)
+    v.addEventListener('click', () => {
+      if (justUnlocked && !v.paused) { justUnlocked = false; return; } // that tap just turned the sound on
+      justUnlocked = false;
+      if (v.paused) {
+        pausedByViewer.delete(v);
+        videos.forEach(o => { if (o !== v) o.pause(); });
+        current = v;
+        play(v);
+      } else {
+        pausedByViewer.add(v);
+        v.pause();
+      }
+    });
+
+    frame.querySelector('.sound-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      justUnlocked = false;
+      if (audible()) soundOn = false;
+      else { soundOn = true; soundAllowed = true; }
+      setMuted();
+    });
+  });
+
+  // first tap / click / key anywhere on the page turns the sound on
+  function unlock() {
+    if (soundAllowed) return;
+    soundAllowed = true;
+    justUnlocked = soundOn;
+    setMuted();
+  }
+  ['pointerdown', 'keydown'].forEach(t => document.addEventListener(t, unlock, { capture: true }));
 </script>
 
 </body>
