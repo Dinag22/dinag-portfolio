@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Night at Mum's</title>
+<link rel="icon" href="../favicon.svg">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #eee;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+  }
+
+
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    align-content: center;
+    min-height: 100vh;
+    padding: 48px 16px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .piece {
+    position: relative;
+    max-width: 100%;
+  }
+  .piece.wide { flex-basis: 100%; display: flex; flex-direction: column; align-items: center; }
+
+  .frame {
+    position: relative;
+    cursor: pointer;
+  }
+  .frame video {
+    display: block;
+    max-width: 100%;
+    max-height: 82vh;
+    background: #111;
+  }
+  .piece.wide video { width: 900px; }
+  .piece.tall video { width: 340px; }
+
+  /* play icon shown while a video is paused */
+  .frame::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 64px;
+    height: 64px;
+    margin: -32px 0 0 -32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l8 5-8 5z' fill='%23fff'/%3E%3C/svg%3E") center / 36px no-repeat;
+    border: 1px solid rgba(255,255,255,0.35);
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+  }
+  .frame.paused::after { opacity: 1; }
+
+  .label {
+    margin-top: 12px;
+    text-align: center;
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .piece.wide .label { max-width: 600px; }
+  .label .title {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ccc;
+  }
+
+  .sound-btn, .fs-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    backdrop-filter: blur(2px);
+  }
+  .sound-btn:hover, .fs-btn:hover { background: rgba(0,0,0,0.75); }
+  .fs-btn { top: 12px; bottom: auto; padding: 0; }
+  .fs-btn svg { width: 18px; height: 18px; }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="piece wide">
+    <div class="frame">
+      <video src="A_Night_at_Mums_web.mp4" poster="a_night_at_mums_poster.jpg" loop playsinline preload="metadata"></video>
+      <button class="sound-btn" aria-label="Toggle sound">🔊</button>
+      <button class="fs-btn" aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+    <div class="label"><div class="title">A Night at Mum's</div></div>
+  </div>
+
+</div>
+
+
+<script>
+  // Only the video most on screen plays; the others pause. Sound is on by default,
+  // but browsers can block sound until the viewer has tapped or clicked the page once.
+  // In that case the video plays silently and gets its sound on the first tap.
+  const frames = [...document.querySelectorAll('.frame')];
+  const videos = frames.map(f => f.querySelector('video'));
+  const visible = new Map();
+  const pausedByViewer = new Set();
+  let soundOn = true;      // what the viewer wants
+  let soundAllowed = true; // false once the browser has blocked sound
+  let justUnlocked = false;
+  let current = null;
+
+  const audible = () => soundOn && soundAllowed;
+
+  function setMuted() {
+    videos.forEach(v => v.muted = !audible());
+    document.querySelectorAll('.sound-btn').forEach(b => b.textContent = audible() ? '🔊' : '🔇');
+  }
+
+  function play(v) {
+    v.muted = !audible();
+    v.play().catch(() => {
+      // blocked with sound: play silently until the viewer taps
+      soundAllowed = false;
+      setMuted();
+      v.play().catch(() => {});
+    });
+  }
+
+  function update() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    let best = null, bestRatio = 0;
+    visible.forEach((ratio, v) => { if (ratio > bestRatio) { best = v; bestRatio = ratio; } });
+    if (bestRatio < 0.5) best = null;
+    videos.forEach(v => { if (v !== best && !v.paused) v.pause(); });
+    if (best !== current && current) pausedByViewer.delete(current);
+    current = best;
+    if (best && best.paused && !pausedByViewer.has(best)) play(best);
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => visible.set(e.target, e.intersectionRatio));
+    update();
+  }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+  videos.forEach(v => io.observe(v));
+
+  videos.forEach((v, i) => {
+    const frame = frames[i];
+    const sync = () => frame.classList.toggle('paused', v.paused);
+    v.addEventListener('play', sync);
+    v.addEventListener('pause', sync);
+    sync();
+
+    // clicking a video plays / pauses it (it keeps looping while playing)
+    v.addEventListener('click', () => {
+      if (justUnlocked && !v.paused) { justUnlocked = false; return; } // that tap just turned the sound on
+      justUnlocked = false;
+      if (v.paused) {
+        pausedByViewer.delete(v);
+        videos.forEach(o => { if (o !== v) o.pause(); });
+        current = v;
+        play(v);
+      } else {
+        pausedByViewer.add(v);
+        v.pause();
+      }
+    });
+
+    // full screen button: opens this video full screen and keeps it playing
+    frame.querySelector('.fs-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      videos.forEach(o => { if (o !== v) o.pause(); });
+      pausedByViewer.delete(v);
+      current = v;
+      if (v.paused) play(v);
+      if (v.requestFullscreen) v.requestFullscreen().catch(() => {});
+      else if (v.webkitRequestFullscreen) v.webkitRequestFullscreen();
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen(); // iPhone
+    });
+
+    frame.querySelector('.sound-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      justUnlocked = false;
+      if (audible()) soundOn = false;
+      else { soundOn = true; soundAllowed = true; }
+      setMuted();
+    });
+  });
+
+  // first tap / click / key anywhere on the page turns the sound on
+  function unlock() {
+    if (soundAllowed) return;
+    soundAllowed = true;
+    justUnlocked = soundOn;
+    setMuted();
+  }
+  ['pointerdown', 'keydown'].forEach(t => document.addEventListener(t, unlock, { capture: true }));
+</script>
+
+</body>
+</html>
